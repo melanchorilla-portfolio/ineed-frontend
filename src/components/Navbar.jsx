@@ -1,6 +1,8 @@
 import { FaUserAlt, FaBell } from "react-icons/fa";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 
 const Navbar = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,10 +13,10 @@ const Navbar = () => {
         <a className="btn btn-ghost text-4xl text-sky-900">ineed</a>
         <ul className="menu menu-horizontal px-1">
           <li>
-            <a>Beranda</a>
+            <Link to="/">Beranda</Link>
           </li>
           <li>
-            <a>Ulasan Perusahaan</a>
+            <Link to="/companies">Ulasan Perusahaan</Link>
           </li>
           <li>
             <a>Cari Info Gaji</a>
