@@ -2,10 +2,10 @@ import { FaUserAlt, FaBell } from "react-icons/fa";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
 
   return (
     <div className="navbar bg-base-100">
@@ -25,7 +25,7 @@ const Navbar = () => {
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 items-center gap-2">
-          {isLogin ? (
+          {isAuthenticated ? (
             <>
               <li>
                 <button className="btn btn-square btn-ghost">
@@ -45,14 +45,12 @@ const Navbar = () => {
             </>
           ) : (
             <li>
-              <a className="font-semibold text-sky-900">
+              <Link to="/login" className="font-semibold text-sky-900">
                 Sign in
-              </a>
+              </Link>
             </li>
           )}
-          <div className="text-slate-300">
-            |
-          </div>
+          <div className="text-slate-300">|</div>
           <li>
             <a>Perusahaan: Pasang Lowongan Kerja</a>
           </li>
