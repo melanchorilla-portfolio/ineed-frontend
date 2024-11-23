@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const CompanyCard = ({
   company,
@@ -63,62 +64,21 @@ const CompanyCard = ({
 };
 
 const PopularCompanies = () => {
-  const companies = [
-    {
-      name: "PT. ASTRA HONDA MOTOR",
-      logo: "https://placehold.co/400",
-      rating: 4.5,
-      reviewCount: "65",
-    },
-    {
-      name: "PT AMARTHA MIKRO FINTEK",
-      logo: "https://placehold.co/400",
-      rating: 3.5,
-      reviewCount: "6",
-    },
-    {
-      name: "PT. Pertamina (PERSERO)",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "40",
-    },
-    {
-      name: "PT. Swakarya Insan Mandiri",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "116",
-    },
-    {
-      name: "PT. Blue Bird Tbk. | Blue Bird Group",
-      logo: "https://placehold.co/400",
-      rating: 3.5,
-      reviewCount: "34",
-    },
-    {
-      name: "PT BFI Finance Indonesia Tbk",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "129",
-    },
-    {
-      name: "PT. Multirasa Nusantara",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "47",
-    },
-    {
-      name: "PT BANK MEGA TBK",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "43",
-    },
-    {
-      name: "DBS Bank",
-      logo: "https://placehold.co/400",
-      rating: 4,
-      reviewCount: "643",
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/companies`)
+      .then((res) => {
+        setData([...res.data.data.docs]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    setIsLoading(false);
+  }, [isLoading, setIsLoading]);
+
 
   return (
     <div className="max-w-5xl mx-auto p-6">
@@ -126,13 +86,13 @@ const PopularCompanies = () => {
         Perusahaan Populer
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {companies.map((company) => (
+        {data.map((company, index) => (
           <CompanyCard
-            key={company.name}
+            key={index}
             company={company.name}
-            logo={company.logo}
+            logo={company.imageURL}
             rating={company.rating}
-            reviewCount={company.reviewCount}
+            reviewCount={company.total}
           />
         ))}
       </div>
