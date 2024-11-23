@@ -3,7 +3,7 @@ import Home from "./screens/Home"
 import Companies from "./screens/Companies";
 import { Provider } from "react-redux";
 import { store } from "./store";
-// import Login from "./screens/Login";
+import Auth from "./screens/Auth";
 
 function App() {
 
@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/companies" element={<Companies />} />
-          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/auth" element={<Auth />} />
           {/* <Route path="/laporkan" element={<Laporkan />} /> */}
         </Routes>
       </BrowserRouter>
