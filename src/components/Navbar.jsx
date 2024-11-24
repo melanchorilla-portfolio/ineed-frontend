@@ -45,7 +45,7 @@ const Navbar = () => {
             </>
           ) : (
             <li>
-              <Link to="/login" className="font-semibold text-sky-900">
+              <Link to="/auth" className="font-semibold text-sky-900">
                 Sign in
               </Link>
             </li>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
 import { IoIosSearch } from "react-icons/io";
-import { FaCity } from "react-icons/fa6";
+// import { FaCity } from "react-icons/fa6";
 import PopularCompanies from "../components/PopularCompanies";
 
 function Companies() {

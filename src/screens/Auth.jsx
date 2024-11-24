@@ -1,10 +1,48 @@
+import axios from "axios";
+import { useState } from "react";
 import { FaArrowRight } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../features/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
+  const [input, setInput] = useState({
+    email: "",
+    password: "",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoading, error } = useSelector((state) => state.auth);
+
+  const handleChange = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/auth/check-email`, input)
+      .then((res) => {
+        if (res.status == 200) {
+          setShowPassword(true);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    dispatch(loginUser(input));
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center pt-16 px-4">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-sky-900">indeed</h1>
+        <h1 className="text-4xl font-bold text-sky-900">ineed</h1>
       </div>
 
       {/* Sign Up Card */}
@@ -75,22 +113,57 @@ const Auth = () => {
         </div>
 
         {/* Email Input */}
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">
-            Email address <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-            placeholder="Enter your email"
-          />
-        </div>
+        <form>
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Email address <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="email"
+              name="email"
+              onChange={handleChange}
+              value={input.email}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Enter your email"
+            />
+          </div>
 
-        {/* Continue Button */}
-        <button className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-          Continue
-          <FaArrowRight />
-        </button>
+          {/* Password Input */}
+          {showPassword && (
+            <div className="mb-6">
+              <label className="block text-gray-700 text-sm font-medium mb-2">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={input.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                placeholder="Enter your password"
+              />
+            </div>
+          )}
+          {error && <div className="text-red-500">{error}</div>}
+          {/* Continue Button */}
+          {showPassword ? (
+            <button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              {isLoading ? "Loading..." : "Login"}
+            </button>
+          ) : (
+            <button
+              onClick={handleClick}
+              className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              Continue
+              <FaArrowRight />
+            </button>
+          )}
+        </form>
       </div>
     </div>
   );
