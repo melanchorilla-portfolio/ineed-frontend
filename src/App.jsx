@@ -1,24 +1,29 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Home from "./screens/Home"
+import Home from "./screens/Home";
 import Companies from "./screens/Companies";
-import { Provider } from "react-redux";
-import { store } from "./store";
 import Auth from "./screens/Auth";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store, persistor } from "./store";
+import { PersistGate } from "redux-persist/integration/react";
+import SessionManager from "./layouts/SessionManager";
 
 function App() {
-
   return (
     <Provider store={store}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/companies" element={<Companies />} />
-          <Route path="/auth" element={<Auth />} />
-          {/* <Route path="/laporkan" element={<Laporkan />} /> */}
-        </Routes>
-      </BrowserRouter>
+      <PersistGate loading={null} persistor={persistor}>
+        <SessionManager>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/companies" element={<Companies />} />
+              <Route path="/auth" element={<Auth />} />
+              {/* <Route path="/laporkan" element={<Laporkan />} /> */}
+            </Routes>
+          </BrowserRouter>
+        </SessionManager>
+      </PersistGate>
     </Provider>
   );
 }
 
-export default App
+export default App;

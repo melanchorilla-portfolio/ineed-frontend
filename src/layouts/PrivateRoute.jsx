@@ -2,9 +2,11 @@ import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isLoading, sessionValidated } = useSelector(
+    (state) => state.auth
+  );
 
-  if (isLoading) {
+  if (isLoading || (!sessionValidated && isAuthenticated)) {
     return <div>Loading...</div>;
   }
 
