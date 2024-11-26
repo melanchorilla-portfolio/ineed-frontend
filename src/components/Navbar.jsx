@@ -1,11 +1,21 @@
 import { FaUserAlt, FaBell } from "react-icons/fa";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+
+  const navigate = useNavigate();
+
+  const handleClickBell = () => {
+    navigate("/notifications");
+  }
+
+  const handleClickChat = () => {
+    navigate("/conversations");
+  };
 
   return (
     <div className="navbar bg-base-100">
@@ -18,9 +28,9 @@ const Navbar = () => {
           <li>
             <Link to="/companies">Ulasan Perusahaan</Link>
           </li>
-          <li>
+          {/* <li>
             <a>Cari Info Gaji</a>
-          </li>
+          </li> */}
         </ul>
       </div>
       <div className="flex-none">
@@ -28,19 +38,36 @@ const Navbar = () => {
           {isAuthenticated ? (
             <>
               <li>
-                <button className="btn btn-square btn-ghost">
+                <button
+                  className="btn btn-square btn-ghost"
+                  onClick={handleClickChat}
+                >
                   <BsChatLeftTextFill />
                 </button>
               </li>
               <li>
-                <button className="btn btn-square btn-ghost">
+                <button
+                  className="btn btn-square btn-ghost"
+                  onClick={handleClickBell}
+                >
                   <FaBell />
                 </button>
               </li>
               <li>
-                <button className="btn btn-square btn-ghost">
-                  <FaUserAlt />
-                </button>
+                <details className="dropdown">
+                  <summary className="">
+                    <FaUserAlt />
+                  </summary>
+                  <ul className="bg-base-100 rounded-t-none p-2 w-52">
+                    <li>
+                      <a>Profile</a>
+                    </li>
+                    <hr />
+                    <li className="text-sky-700">
+                      <a className="">Sign Out</a>
+                    </li>
+                  </ul>
+                </details>
               </li>
             </>
           ) : (
