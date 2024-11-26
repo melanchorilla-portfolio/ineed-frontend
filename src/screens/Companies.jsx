@@ -15,8 +15,8 @@ function Companies() {
           <p className="text-md font-semibold mb-1">
             Nama perusahaan atau posisi lowongan
           </p>
-          <div class="flex items-center space-x-4 mx-auto mb-4">
-            <div class="flex-grow">
+          <div className="flex items-center space-x-4 mx-auto mb-4">
+            <div className="flex-grow">
               <label className="input input-bordered flex items-center gap-2">
                 <input type="text" className="grow" placeholder="Search" />
                 <IoIosSearch />
