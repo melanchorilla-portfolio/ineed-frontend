@@ -2,10 +2,12 @@ import { FaUserAlt, FaBell } from "react-icons/fa";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice";
 
 const Navbar = () => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -15,6 +17,10 @@ const Navbar = () => {
 
   const handleClickChat = () => {
     navigate("/conversations");
+  };
+
+  const handleClickLogout = () => {
+    dispatch(logout());
   };
 
   return (
@@ -64,7 +70,9 @@ const Navbar = () => {
                     </li>
                     <hr />
                     <li className="text-sky-700">
-                      <a className="">Sign Out</a>
+                      <a className="" onClick={() => handleClickLogout()}>
+                        Sign Out
+                      </a>
                     </li>
                   </ul>
                 </details>
