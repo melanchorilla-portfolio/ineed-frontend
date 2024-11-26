@@ -10,6 +10,8 @@ import axios from "axios";
 function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [detailData, setDetailData] = useState({
     _id: 0,
     title: "",
@@ -23,31 +25,49 @@ function Home() {
     salaryRange: "",
   });
 
-  useEffect(() => {
-    if (isLoading) {
-      axios
-        .get(`${import.meta.env.VITE_API_URL}/jobs`)
-        .then((res) => {
-          setData([...res.data.data.docs]);
-          setDetailData(res.data.data.docs[0]);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+  const fetchJobs = async (currentPage) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/jobs?page=${currentPage}`
+      );
+
+      // For the first page, set the first job as detail data
+      if (currentPage === 1) {
+        setDetailData(res.data.data.docs[0]);
+      }
+
+      // Append new jobs to existing data
+      setData((prevData) =>
+        currentPage === 1
+          ? res.data.data.docs
+          : [...prevData, ...res.data.data.docs]
+      );
+
+      // Check if there are more pages
+      setHasMore(res.data.data.hasNextPage);
+      setIsLoading(false);
+    } catch (err) {
+      console.error(err);
       setIsLoading(false);
     }
-  }, [isLoading, setIsLoading]);
+  };
 
+  useEffect(() => {
+    fetchJobs(page);
+  }, [page]);
 
-  const handleClickJob = (id, index) => {
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/jobs/${id}`)
-      .then((res) => {
-        setDetailData({ ...res.data.data });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+  const handleClickJob = async (id) => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/jobs/${id}`);
+      setDetailData({ ...res.data.data });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
   return (
@@ -68,12 +88,12 @@ function Home() {
       <div className="max-w-6xl mx-auto my-5 flex">
         <div className="w-1/2 mx-5">
           {data.length ? (
-            data.map((job, index) => {
-              return (
+            <>
+              {data.map((job, index) => (
                 <div
                   className="card card-bordered bg-base-100 shadow-xl mb-3"
                   key={index}
-                  onClick={() => handleClickJob(job._id, index)}
+                  onClick={() => handleClickJob(job._id)}
                 >
                   <div className="card-body">
                     <div className="card-actions justify-between">
@@ -100,9 +120,7 @@ function Home() {
                         {job.title}
                       </h2>
                       <p className="text-sm items-center flex">
-                        {job.companyId.name}{" "}
-                        {/* <span className="ml-2 font-semibold">4,0</span>{" "}
-                        <MdStar className="inline" /> */}
+                        {job.companyId.name}
                       </p>
                       <p className="text-sm">{job.companyId.city}</p>
 
@@ -112,8 +130,20 @@ function Home() {
                     </div>
                   </div>
                 </div>
-              );
-            })
+              ))}
+
+              {hasMore && (
+                <div className="text-center mt-4">
+                  <button
+                    onClick={handleLoadMore}
+                    disabled={isLoading}
+                    className="btn btn-primary text-white"
+                  >
+                    {isLoading ? "Loading..." : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center text-gray-600">
               <MdLocationOn className="inline" />
