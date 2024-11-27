@@ -1,10 +1,22 @@
+import { useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { MdLocationOn } from "react-icons/md";
 
-const Searchbar = () => {
+const Searchbar = ({ onSearch }) => {
+  const [jobKeyword, setJobKeyword] = useState("");
+  const [location, setLocation] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    onSearch({ jobKeyword, location });
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
-      <form className="flex items-center bg-white rounded-md border shadow-lg p-2">
+      <form
+        onSubmit={handleSearch}
+        className="flex items-center bg-white rounded-md border shadow-lg p-2"
+      >
         {/* Job Position Search Input */}
         <div className="flex items-center flex-1 px-3 border-r border-gray-200">
           <IoIosSearch className="w-5 h-5 text-gray-400 mr-2" />
@@ -12,6 +24,8 @@ const Searchbar = () => {
             type="text"
             placeholder="Posisi lowongan, kata kunci"
             className="w-full py-2 px-1 focus:outline-none text-gray-700 placeholder-gray-400"
+            value={jobKeyword}
+            onChange={(e) => setJobKeyword(e.target.value)}
           />
         </div>
 
@@ -22,6 +36,8 @@ const Searchbar = () => {
             type="text"
             placeholder="Kota, provinsi, kode pos"
             className="w-full py-2 px-1 focus:outline-none text-gray-700 placeholder-gray-400"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
           />
         </div>
 

@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import Searchbar from "../components/Searchbar";
 import { CiMenuKebab } from "react-icons/ci";
 import { MdStar, MdDoNotDisturbAlt, MdLocationOn } from "react-icons/md";
@@ -6,12 +6,17 @@ import { FaRegBookmark, FaHeart, FaChevronDown, FaFlag } from "react-icons/fa";
 import { FaMoneyBills } from "react-icons/fa6";
 import Layout from "../layouts/Layout";
 import axios from "axios";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [filters, setFilters] = useState({
+    jobKeyword: "",
+    location: "",
+  });
   const [detailData, setDetailData] = useState({
     _id: 0,
     title: "",
@@ -25,26 +30,32 @@ function Home() {
     salaryRange: "",
   });
 
-  const fetchJobs = async (currentPage) => {
+  const fetchJobs = async (currentPage, searchFilters = {}) => {
     try {
       setIsLoading(true);
+
+      const queryParams = new URLSearchParams({
+        page: currentPage,
+        keyword: searchFilters.jobKeyword || "",
+        location: searchFilters.location || "",
+      });
+
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/jobs?page=${currentPage}`
+        `${import.meta.env.VITE_API_URL}/jobs?${queryParams}`
       );
 
-      // For the first page, set the first job as detail data
-      if (currentPage === 1) {
-        setDetailData(res.data.data.docs[0]);
-      }
-
-      // Append new jobs to existing data
-      setData((prevData) =>
+      // Reset data if it's the first page of a new search
+      const jobData =
         currentPage === 1
           ? res.data.data.docs
-          : [...prevData, ...res.data.data.docs]
-      );
+          : [...(currentPage === 1 ? [] : data), ...res.data.data.docs];
 
-      // Check if there are more pages
+      // For the first page, set the first job as detail data
+      if (currentPage === 1 && jobData.length > 0) {
+        setDetailData(jobData[0]);
+      }
+
+      setData(jobData);
       setHasMore(res.data.data.hasNextPage);
       setIsLoading(false);
     } catch (err) {
@@ -54,8 +65,26 @@ function Home() {
   };
 
   useEffect(() => {
-    fetchJobs(page);
+    // Reset to first page and fetch jobs when filters change
+    setPage(1);
+    fetchJobs(1, filters);
+  }, [filters]);
+
+  useEffect(() => {
+    // Fetch more jobs when page changes
+    if (page > 1) {
+      fetchJobs(page, filters);
+    }
   }, [page]);
+
+  const handleSearch = (searchFilters) => {
+    // Update filters, which will trigger useEffect and fetch new data
+    setFilters({
+      jobKeyword: searchFilters.jobKeyword,
+      location: searchFilters.location,
+    });
+    setPage(1);
+  };
 
   const handleClickJob = async (id) => {
     try {
@@ -66,13 +95,13 @@ function Home() {
     }
   };
 
-  const handleLoadMore = () => {
+  const fetchMoreData = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
   return (
     <Layout>
-      <Searchbar />
+      <Searchbar onSearch={handleSearch} />
 
       <div className="max-w-2xl mt-12 mx-auto">
         <div role="tablist" className="tabs tabs-bordered">
@@ -88,7 +117,21 @@ function Home() {
       <div className="max-w-6xl mx-auto my-5 flex">
         <div className="w-1/2 mx-5">
           {data.length ? (
-            <>
+            <InfiniteScroll
+              dataLength={data.length}
+              next={fetchMoreData}
+              hasMore={hasMore}
+              loader={
+                <div className="text-center my-4">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              }
+              endMessage={
+                <p className="text-center my-4 text-gray-500">
+                  Tidak ada lowongan lagi yang dapat dimuat
+                </p>
+              }
+            >
               {data.map((job, index) => (
                 <div
                   className="card card-bordered bg-base-100 shadow-xl mb-3"
@@ -131,19 +174,7 @@ function Home() {
                   </div>
                 </div>
               ))}
-
-              {hasMore && (
-                <div className="text-center mt-4">
-                  <button
-                    onClick={handleLoadMore}
-                    disabled={isLoading}
-                    className="btn btn-primary text-white"
-                  >
-                    {isLoading ? "Loading..." : "Load More"}
-                  </button>
-                </div>
-              )}
-            </>
+            </InfiniteScroll>
           ) : (
             <div className="text-center text-gray-600">
               <MdLocationOn className="inline" />
