@@ -7,15 +7,17 @@ import { FaMoneyBills } from "react-icons/fa6";
 import Layout from "../layouts/Layout";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [filters, setFilters] = useState({
-    jobKeyword: "",
-    location: "",
+    jobKeyword: searchParams.get("keyword") || "",
+    location: searchParams.get("location") || "",
   });
   const [detailData, setDetailData] = useState({
     _id: 0,
@@ -34,16 +36,21 @@ function Home() {
     try {
       setIsLoading(true);
 
-      const queryParams = new URLSearchParams({
-        page: currentPage,
-        keyword: searchFilters.jobKeyword || "",
-        location: searchFilters.location || "",
-      });
-
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/jobs?${queryParams}`
+      setSearchParams(
+        {
+          keyword: searchFilters.jobKeyword || "",
+          location: searchFilters.location || "",
+        },
+        { replace: true }
       );
 
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/jobs`, {
+        params: {
+          page: currentPage,
+          keyword: searchFilters.jobKeyword || "",
+          location: searchFilters.location || "",
+        },
+      });
       // Reset data if it's the first page of a new search
       const jobData =
         currentPage === 1
@@ -64,18 +71,19 @@ function Home() {
     }
   };
 
+  // Effect to handle initial load and parameter changes
   useEffect(() => {
-    // Reset to first page and fetch jobs when filters change
+    setFilters({
+      jobKeyword: searchParams.get("keyword") || "",
+      location: searchParams.get("location") || "",
+    });
+  }, [searchParams]);
+
+  // Effect to fetch jobs when filters change
+  useEffect(() => {
     setPage(1);
     fetchJobs(1, filters);
   }, [filters]);
-
-  useEffect(() => {
-    // Fetch more jobs when page changes
-    if (page > 1) {
-      fetchJobs(page, filters);
-    }
-  }, [page]);
 
   const handleSearch = (searchFilters) => {
     // Update filters, which will trigger useEffect and fetch new data
@@ -83,7 +91,6 @@ function Home() {
       jobKeyword: searchFilters.jobKeyword,
       location: searchFilters.location,
     });
-    setPage(1);
   };
 
   const handleClickJob = async (id) => {
@@ -99,9 +106,22 @@ function Home() {
     setPage((prevPage) => prevPage + 1);
   };
 
+  // Effect to fetch more data when page changes
+  useEffect(() => {
+    if (page > 1) {
+      fetchJobs(page, filters);
+    }
+  }, [page]);
+
   return (
     <Layout>
-      <Searchbar onSearch={handleSearch} />
+      <Searchbar
+        onSearch={handleSearch}
+        initialValues={{
+          jobKeyword: searchParams.get("keyword") || "",
+          location: searchParams.get("location") || "",
+        }}
+      />
 
       <div className="max-w-2xl mt-12 mx-auto">
         <div role="tablist" className="tabs tabs-bordered">
