@@ -6,11 +6,11 @@ const PrivateRoute = ({ children }) => {
     (state) => state.auth
   );
 
-  if (isLoading || (!sessionValidated && isAuthenticated)) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading || (!sessionValidated && isAuthenticated)) {
+  //   return <div>Loading...</div>;
+  // }
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : <Navigate to="/auth" />;
 };
 
 export default PrivateRoute;

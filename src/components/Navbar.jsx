@@ -26,7 +26,7 @@ const Navbar = () => {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a className="btn btn-ghost text-4xl text-sky-900">ineed</a>
+        <Link to="/" className="btn btn-ghost text-4xl text-sky-900">ineed</Link>
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link to="/">Beranda</Link>
@@ -87,7 +87,7 @@ const Navbar = () => {
           )}
           <div className="text-slate-300">|</div>
           <li>
-            <a>Perusahaan: Pasang Lowongan Kerja</a>
+            <Link to="/new-company">Perusahaan: Pasang Lowongan Kerja</Link>
           </li>
         </ul>
       </div>

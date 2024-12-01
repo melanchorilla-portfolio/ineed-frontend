@@ -52,7 +52,7 @@ export const getUserData = createAsyncThunk(
     'auth/getUserData',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await api.get('/api/auth/me');
+            const response = await api.get('/auth/me');
             return response.data;
         } catch (error) {
             return rejectWithValue(

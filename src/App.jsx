@@ -9,6 +9,8 @@ import SessionManager from "./layouts/SessionManager";
 import Notifications from "./screens/Notifications";
 import Conversations from "./screens/Conversations";
 import CompaniesWithFilter from "./screens/CompaniesWithFilter";
+import NewCompany from "./screens/NewCompany";
+import PrivateRoute from "./layouts/PrivateRoute";
 
 function App() {
   return (
@@ -19,7 +21,18 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/companies" element={<Companies />} />
-              <Route path="/companies/search" element={<CompaniesWithFilter />} />
+              <Route
+                path="/new-company"
+                element={
+                  <PrivateRoute>
+                    <NewCompany />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/companies/search"
+                element={<CompaniesWithFilter />}
+              />
               <Route path="/auth" element={<Auth />} />
               <Route path="/conversations" element={<Conversations />} />
               <Route path="/notifications" element={<Notifications />} />
